@@ -20,14 +20,19 @@ import java.util.Optional;
 public class AgregarCarroServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         Long id = Long.parseLong(req.getParameter("id"));
         ProductoServices service = new ProductosServicesImpl();
+
         Optional<Producto> producto = service.porId(id);
 
-        if(producto.isPresent()) {
+        if (producto.isPresent()) {
+
             ItemCarro item = new ItemCarro(1, producto.get());
             HttpSession session = req.getSession();
+
             DetalleCarro detalleCarro;
+
             if (session.getAttribute("carro") == null) {
                 detalleCarro = new DetalleCarro();
                 session.setAttribute("carro", detalleCarro);
@@ -37,6 +42,7 @@ public class AgregarCarroServlet extends HttpServlet {
 
             detalleCarro.addItemCarro(item);
         }
+
         resp.sendRedirect(req.getContextPath() + "/ver-carro");
     }
 }

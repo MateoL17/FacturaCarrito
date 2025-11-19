@@ -1,9 +1,4 @@
 package controllers;
-/*
- * Servlet para mostrar el listado de productos
- * Muestra información diferente según si el usuario está autenticado o no
- * Autor: ITQ
- */
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,11 +18,13 @@ import java.util.Optional;
 
 @WebServlet({"/productos.html", "/productos"})
 public class ProductoServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ProductoServices service = new ProductosServicesImpl();
         List<Producto> productos = service.listar();
 
+        // Servicio de login
         LoginService auth = new LoginServiceSessionImpl();
         Optional<String> usernameOptional = auth.getUsername(req);
 
@@ -37,45 +34,53 @@ public class ProductoServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<meta charset=utf-8>");
+            out.println("<meta charset='utf-8'>");
             out.println("<title>Listado de Productos</title>");
             out.println("<link rel='stylesheet' href='" + req.getContextPath() + "/css/styles.css'>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Listado de Productos!</h1>");
-            if(usernameOptional.isPresent()) {
-                out.println("<div style='color: blue;'>Hola " + usernameOptional.get() + "</div>");
-            }
+            out.println("<h1>Listado de Productos</h1>");
+
+            usernameOptional.ifPresent(username ->
+                    out.println("<div style='color: blue;'>Hola " + username + "</div>")
+            );
+
             out.println("<table>");
             out.println("<tr>");
-            out.println("<th>id</th>");
-            out.println("<th>nombre</th>");
-            out.println("<th>tipo</th>");
-            if(usernameOptional.isPresent()) {
-                out.println("<th>precio</th>");
+            out.println("<th>ID</th>");
+            out.println("<th>Nombre</th>");
+            out.println("<th>Tipo</th>");
+            if (usernameOptional.isPresent()) {
+                out.println("<th>Precio</th>");
+                out.println("<th>Stock</th>");
+                out.println("<th>Descripción</th>");
+                out.println("<th>Fecha caducidad</th>");
+                out.println("<th>Fecha elaboración</th>");
                 out.println("<th>Opciones</th>");
             }
             out.println("</tr>");
-            productos.forEach(p -> {
+
+            for (Producto p : productos) {
                 out.println("<tr>");
                 out.println("<td>" + p.getIdProducto() + "</td>");
                 out.println("<td>" + p.getNombre() + "</td>");
                 out.println("<td>" + p.getTipo() + "</td>");
-                if(usernameOptional.isPresent()) {
+                if (usernameOptional.isPresent()) {
                     out.println("<td>" + p.getPrecio() + "</td>");
-                    out.println("<td><a href=\""
+                    out.println("<td>" + p.getStock() + "</td>");
+                    out.println("<td>" + p.getDescripcion() + "</td>");
+                    out.println("<td>" + p.getFechaCaducidad() + "</td>");
+                    out.println("<td>" + p.getFechaElaboracion() + "</td>");
+                    out.println("<td><a href='"
                             + req.getContextPath()
                             + "/agregar-carro?id="
                             + p.getIdProducto()
-                            + "\" class=\"nav-button\">Agregar Producto al carro</a></td>");
+                            + "' class='nav-button'>Agregar al carro</a></td>");
                 }
                 out.println("</tr>");
-            });
+            }
+
             out.println("</table>");
-            out.println("<br>");
-            out.println("<div class='nav-buttons'>");
-            out.println("<a href='" + req.getContextPath() + "/index.html' class='nav-button secondary'>Volver</a>");
-            out.println("</div>");
             out.println("</body>");
             out.println("</html>");
         }

@@ -1,43 +1,39 @@
 package services;
-/*
- * Implementación del servicio de productos
- * Proporciona datos de ejemplo para demostración
- * Autor: ITQ
- */
 
 import models.Producto;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 public class ProductosServicesImpl implements ProductoServices {
+
     @Override
     public List<Producto> listar() {
         return Arrays.asList(
-                new Producto(1L, "Laptop", "Tecnología", 1200.00),
-                new Producto(2L, "Mouse", "Tecnología", 25.50),
-                new Producto(3L, "Teclado", "Tecnología", 45.00),
-                new Producto(4L, "Monitor", "Tecnología", 300.00),
-                new Producto(5L, "Silla", "Oficina", 150.00)
-                new Producto(6L, "as", "Tecnologia", 20.50, 400, "Ds", -2026, 1, 11-11-2025)
+                new Producto(1L, "Laptop", "Tecnología", 1200.00, 50,
+                        "Laptop de alto rendimiento", LocalDate.of(2027, 12, 1), 1,
+                        LocalDate.of(2025, 1, 15)),
+                new Producto(2L, "Mouse", "Tecnología", 25.50, 200,
+                        "Mouse óptico inalámbrico", LocalDate.of(2028, 5, 10), 1,
+                        LocalDate.of(2024, 11, 20)),
+                new Producto(3L, "Teclado", "Tecnología", 45.00, 180,
+                        "Teclado mecánico retroiluminado", LocalDate.of(2028, 8, 3), 1,
+                        LocalDate.of(2024, 12, 5)),
+                new Producto(4L, "Monitor", "Tecnología", 300.00, 75,
+                        "Monitor LED Full HD", LocalDate.of(2029, 2, 15), 1,
+                        LocalDate.of(2025, 3, 10)),
+                new Producto(5L, "Silla", "Oficina", 150.00, 40,
+                        "Silla ergonómica de oficina", LocalDate.of(2030, 4, 20), 1,
+                        LocalDate.of(2025, 6, 1))
         );
     }
 
     @Override
     public Optional<Producto> porId(Long id) {
-        /*
-        * Stream en java es convertir una lista en una secuencia de elementos sobre
-        * la cual se pueden aplicar operaciones funcionales como filter, map, collect
-        * filter: aqui se filtra los elementos del stream
-        * p -> representa cada producto de la lista
-        * p.getId().equals(id) compara el id del producto con el id que recibimos como parametro
-        * Si el id coincide, el producto pasa el filtro; sino, se descarta.
-        * findAny(): intenta encontrar un elemento cualquiera del stream que cumpla la condicion
-        * si lo encuentra devuelve un Optional<Producto>,
-        * sino le encuentra devuelve Optional.empty()
-        * */
-
-        return listar().stream().filter(p -> p.getIdProducto().equals(id)).findAny();
+        return listar().stream()
+                .filter(p -> id != null && p.getIdProducto().equals(id))
+                .findAny();
     }
 }

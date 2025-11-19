@@ -1,6 +1,8 @@
 package filter;
 
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import util.ConexionBDD;
 
@@ -11,6 +13,8 @@ import java.sql.SQLException;
 //Implementamos una anotacion. Esta anotacion
 //me sirve para poder utilizar la conexion en cualquier parte
 // de mi aplicacion
+
+@WebFilter("/*")
 public class ConexionFilter implements Filter {
     /*
     * Una clase en filter en java es un objeto que realiza tareas

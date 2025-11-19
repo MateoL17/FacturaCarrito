@@ -1,5 +1,6 @@
 package repositorio;
 
+import models.Categoria;
 import models.Producto;
 
 import java.sql.*;
@@ -47,6 +48,56 @@ public class ProductoRepositoryJdbcImplement implements Repository<Producto> {
 
     @Override
     public void guardar(Producto producto) throws SQLException {
+        String sql;
+        if(producto.getIdProducto() != null && producto.getIdProducto() > 0) {
+            sql = "update producto set nombreCategoria=?, idCategoria=?, stock=?, precio=?, descripcion=?, codigo=? " +
+            " fecha_elaboracion=?, fecha_caducidad=? where id=?";
+        } else {
+            sql = "insert into producto (nombreCategoria, idCategoria, stock, precio, descripcion, codigo" +
+                    ", fecha_elaboracion, fecha_caducida, condicion) values (?, ?, ?, ?, ?, ?, ?, ?, 1)";
+        }
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, producto.getNombre());
+            stmt.setInt(2, producto.getStock());
+            stmt.setDouble(3, producto.getPrecio());
+            stmt.setString(4, producto.getDescripcion());
+            stmt.setLong(5, producto.getCondicion());
+            stmt.setLong(6, producto.getCategoria().getId());
 
+            if(producto.getIdProducto() != null && producto.getIdProducto() > 0) {
+                stmt.setLong(7, producto.getIdProducto());
+            } else {
+                stmt.setDate(7, Date.valueOf(producto.getFechaElaboracion()));
+                stmt.setDate(8, Date.valueOf(producto.getFechaCaducidad()));
+            }
+            stmt.executeUpdate();
+        }
+    }
+
+    @Override
+    public void eliminar(Long id) throws SQLException {
+        String sql = "delete from producto where id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    private static Producto getProducto(ResultSet rs) throws SQLException {
+        Producto p = new Producto();
+        p.setIdProducto(rs.getLong("id"));
+        p.setNombre(rs.getString("nombreProducto"));
+        p.setStock(rs.getInt("stock"));
+        p.setPrecio(rs.getDouble("precio"));
+        p.setDescripcion(rs.getString("descripcion"));
+        p.setCondicion(rs.getInt("condicion"));
+        p.setFechaElaboracion(rs.getDate("fecha_elaboracion").toLocalDate());
+        p.setFechaCaducidad(rs.getDate("fecha_caducidad").toLocalDate());
+
+        Categoria c = new Categoria();
+        c.setId(rs.getLong("id"));
+        c.setNombre(rs.getString("nombreCategoria"));
+        p.setCategoria(c);
+        return p;
     }
 }
