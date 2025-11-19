@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import services.LoginService;
 import services.LoginServiceSessionImpl;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        LoginService auth = new LoginServiceSessionImpl();
         Optional<String> usernameOptional = authService.getUsername(req);
 
         if (usernameOptional.isPresent()) {

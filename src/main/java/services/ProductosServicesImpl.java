@@ -20,6 +20,7 @@ public class ProductosServicesImpl implements ProductoServices {
                 new Producto(3L, "Teclado", "Tecnología", 45.00),
                 new Producto(4L, "Monitor", "Tecnología", 300.00),
                 new Producto(5L, "Silla", "Oficina", 150.00)
+                new Producto(6L, "as", "Tecnologia", 20.50, 400, "Ds", -2026, 1, 11-11-2025)
         );
     }
 

@@ -2,6 +2,7 @@ package filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletResponse;
+import util.ConexionBDD;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -35,7 +36,7 @@ public class ConexionFilter implements Filter {
 
         //obtenemos la conexion
 
-        try (Connection conn = Conexion.getConnection)) {
+        try (Connection conn = ConexionBDD.getConnection()) {
             // verificamos que la conexion realizada o se cambien a autocommit
             //(configuracion automatica a la base de datos y cada instruccion
             //sql)
@@ -50,15 +51,15 @@ public class ConexionFilter implements Filter {
                 //pasa la solicitud y la respuesta al siguiente filtro o al recurso
                 //destino
                 filterChain.doFilter(request, response);
-                conn.commit
-            }catch (SQLException | Exception e){
+                conn.commit();
+            }catch (SQLException e){
                 conn.rollback();
                 //enviamos un codigo de error HTTP 500 al cliente
                 //indicando un problema interno del servidor
                 ((HttpServletResponse)response).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
                 e.printStackTrace();
             }
-        }catch (SQLException throwables){
+        } catch (SQLException throwables){
             throwables.printStackTrace();
         }
     }
