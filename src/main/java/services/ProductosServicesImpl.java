@@ -1,5 +1,6 @@
 package services;
 
+import models.Categoria;
 import models.Producto;
 
 import java.time.LocalDate;
@@ -35,5 +36,25 @@ public class ProductosServicesImpl implements ProductoServices {
         return listar().stream()
                 .filter(p -> id != null && p.getIdProducto().equals(id))
                 .findAny();
+    }
+
+    @Override
+    public void guardar(Producto producto) {
+
+    }
+
+    @Override
+    public void eliminar(Long id) {
+
+    }
+
+    @Override
+    public List<Categoria> listarCategorias() {
+        return List.of();
+    }
+
+    @Override
+    public Optional<Categoria> porIdCategoria(Long id) {
+        return Optional.empty();
     }
 }

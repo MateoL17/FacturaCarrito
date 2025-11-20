@@ -9,11 +9,13 @@ import jakarta.servlet.http.HttpSession;
 import models.DetalleCarro;
 import models.ItemCarro;
 import models.Producto;
+import services.ProductoServiceJdbcImpl;
 import services.ProductoServices;
 import services.ProductosServicesImpl;
 
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.Optional;
 
 @WebServlet("/agregar-carro")
@@ -22,7 +24,10 @@ public class AgregarCarroServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         Long id = Long.parseLong(req.getParameter("id"));
-        ProductoServices service = new ProductosServicesImpl();
+        // Traemos la conexion
+        Connection conn = (Connection) req.getAttribute ("conn");
+        // Instaciamos el nuevo objeto jdbc
+        ProductoServices service = new ProductoServiceJdbcImpl(conn);
 
         Optional<Producto> producto = service.porId(id);
 

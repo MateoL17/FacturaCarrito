@@ -7,7 +7,6 @@ public class Categoria {
     private int estado;
 
     // Implementamos el constructor vacio
-
     public Categoria() {
     }
 

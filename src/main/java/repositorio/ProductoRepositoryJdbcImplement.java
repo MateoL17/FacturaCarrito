@@ -21,8 +21,10 @@ public class ProductoRepositoryJdbcImplement implements Repository<Producto> {
     public List<Producto> listar() throws SQLException {
         List<Producto> productos = new ArrayList<>();
         try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("select p.* , c.nombreCategoria as categoria FROM producto as p " +
-                     "INNER JOIN categoria as c ON (p.categoria=c.id) order by pd.id ASC")) {
+             ResultSet rs = stmt.executeQuery(
+                     "SELECT p.*, c.nombreCategoria as categoria " + "FROM producto as p " +
+                             "INNER JOIN categoria as c ON (p.idCategoria = c.id) " +
+                             "ORDER BY p.id ASC")) {
             while (rs.next()) {
                 Producto p = getProducto(rs);
                 productos.add(p);
@@ -34,8 +36,10 @@ public class ProductoRepositoryJdbcImplement implements Repository<Producto> {
     @Override
     public Producto porId(Long id) throws SQLException {
         Producto producto = null;
-        try (PreparedStatement stmt = conn.prepareStatement("select p.*, c.nombreCategoria as categoria from producto as p " +
-                " inner join categoria as c ON (p.categoria=c.id) where id = ?)")) {
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "SELECT p.*, c.nombreCategoria as categoria " + "FROM producto as p " +
+                        "INNER JOIN categoria as c ON (p.idCategoria = c.id) " +
+                        "WHERE p.id = ?")) {
             stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -49,26 +53,30 @@ public class ProductoRepositoryJdbcImplement implements Repository<Producto> {
     @Override
     public void guardar(Producto producto) throws SQLException {
         String sql;
-        if(producto.getIdProducto() != null && producto.getIdProducto() > 0) {
-            sql = "update producto set nombreCategoria=?, idCategoria=?, stock=?, precio=?, descripcion=?, codigo=? " +
-            " fecha_elaboracion=?, fecha_caducidad=? where id=?";
+        if (producto.getIdProducto() != null && producto.getIdProducto() > 0) {
+            sql = "UPDATE producto SET nombreProducto=?, idCategoria=?, stock=?, precio=?, descripcion=?, " +
+                    "fecha_elaboracion=?, fecha_caducidad=? WHERE id=?";
         } else {
-            sql = "insert into producto (nombreCategoria, idCategoria, stock, precio, descripcion, codigo" +
-                    ", fecha_elaboracion, fecha_caducida, condicion) values (?, ?, ?, ?, ?, ?, ?, ?, 1)";
+            sql = "INSERT INTO producto (nombreProducto, idCategoria, stock, precio, descripcion, " +
+                    "fecha_elaboracion, fecha_caducidad, condicion) VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
         }
+
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, producto.getNombre());
-            stmt.setInt(2, producto.getStock());
-            stmt.setDouble(3, producto.getPrecio());
-            stmt.setString(4, producto.getDescripcion());
-            stmt.setLong(5, producto.getCondicion());
-            stmt.setLong(6, producto.getCategoria().getId());
+            stmt.setLong(2, producto.getCategoria().getId());
+            stmt.setInt(3, producto.getStock());
+            stmt.setDouble(4, producto.getPrecio());
+            stmt.setString(5, producto.getDescripcion());
 
-            if(producto.getIdProducto() != null && producto.getIdProducto() > 0) {
-                stmt.setLong(7, producto.getIdProducto());
+            if (producto.getIdProducto() != null && producto.getIdProducto() > 0) {
+                // UPDATE
+                stmt.setDate(6, Date.valueOf(producto.getFechaElaboracion()));
+                stmt.setDate(7, Date.valueOf(producto.getFechaCaducidad()));
+                stmt.setLong(8, producto.getIdProducto());
             } else {
-                stmt.setDate(7, Date.valueOf(producto.getFechaElaboracion()));
-                stmt.setDate(8, Date.valueOf(producto.getFechaCaducidad()));
+                // INSERT
+                stmt.setDate(6, Date.valueOf(producto.getFechaElaboracion()));
+                stmt.setDate(7, Date.valueOf(producto.getFechaCaducidad()));
             }
             stmt.executeUpdate();
         }
@@ -93,11 +101,13 @@ public class ProductoRepositoryJdbcImplement implements Repository<Producto> {
         p.setCondicion(rs.getInt("condicion"));
         p.setFechaElaboracion(rs.getDate("fecha_elaboracion").toLocalDate());
         p.setFechaCaducidad(rs.getDate("fecha_caducidad").toLocalDate());
+        p.setTipo(rs.getString("categoria"));
 
         Categoria c = new Categoria();
-        c.setId(rs.getLong("id"));
-        c.setNombre(rs.getString("nombreCategoria"));
+        c.setId(rs.getLong("idCategoria"));
+        c.setNombre(rs.getString("categoria"));
         p.setCategoria(c);
+
         return p;
     }
 }
