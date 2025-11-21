@@ -43,9 +43,10 @@ public class ProductoServlet extends HttpServlet {
             out.println("<body>");
             out.println("<h1>Listado de Productos</h1>");
 
-            usernameOptional.ifPresent(username ->
-                    out.println("<div style='color: blue;'>Hola " + username + "</div>")
-            );
+            usernameOptional.ifPresent(username -> {
+                out.println("<div style='color: blue;'>Hola " + username + "</div>");
+                out.println("<a href='productos/form'>Crear Producto</a>");
+            });
 
             out.println("<table>");
             out.println("<tr>");
